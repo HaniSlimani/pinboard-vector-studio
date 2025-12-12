@@ -2,7 +2,6 @@ package pobj.pinboard.editor.tools;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import pobj.pinboard.document.Clip;
 import pobj.pinboard.document.ClipRect;
 import pobj.pinboard.editor.EditorInterface;
@@ -29,15 +28,17 @@ public class ToolRect implements Tool {
     public void release(EditorInterface i, MouseEvent e) {
         endX = e.getX();
         endY = e.getY();
-        Clip c = new ClipRect(Math.min(startX, endX), Math.min(startY, endY),
-                              Math.max(startX, endX), Math.max(startY, endY),
-                              Color.BLUE); // couleur fixe pour rectangles
+        Clip c = new ClipRect(
+            Math.min(startX, endX), Math.min(startY, endY),
+            Math.max(startX, endX), Math.max(startY, endY),
+            i.getCurrentColor()  // <-- utilise l'interface, pas de cast
+        );
         i.getBoard().addClip(c);
     }
 
     @Override
     public void drawFeedback(EditorInterface i, GraphicsContext gc) {
-        gc.setStroke(Color.BLUE);
+        gc.setStroke(i.getCurrentColor());
         gc.strokeRect(Math.min(startX, endX), Math.min(startY, endY),
                       Math.abs(endX - startX), Math.abs(endY - startY));
     }
@@ -47,3 +48,4 @@ public class ToolRect implements Tool {
         return "Rectangle Tool";
     }
 }
+

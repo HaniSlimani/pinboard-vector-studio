@@ -1,156 +1,166 @@
 package pobj.pinboard.editor;
 
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
 import pobj.pinboard.document.Board;
+import pobj.pinboard.document.Clip;
 import pobj.pinboard.editor.tools.*;
 
-@SuppressWarnings("unused")
-public class EditorWindow implements EditorInterface {
+import java.util.List;
+
+public class EditorWindow implements EditorInterface, ClipboardListener {
 
     private Board board;
     private Stage stage;
     private Canvas canvas;
     private Tool currentTool;
     private Label statusLabel;
+    private Selection selection = new Selection();
+    private MenuItem miPaste;
+    private Color currentColor = Color.BLACK;
 
     public EditorWindow(Stage stage) {
         this.stage = stage;
         this.board = new Board();
-        this.currentTool = new ToolRect(); // Outil par défaut
-        this.statusLabel = new Label(currentTool.getName(this));
+        this.currentTool = new ToolRect();  // outil par défaut
 
         VBox root = new VBox();
 
-
-        // Menu File
+        // --- MENU FILE ---
         Menu menuFile = new Menu("File");
         MenuItem miNew = new MenuItem("New");
         MenuItem miClose = new MenuItem("Close");
-
         miNew.setOnAction(e -> new EditorWindow(new Stage()));
         miClose.setOnAction(e -> stage.close());
-
         menuFile.getItems().addAll(miNew, miClose);
- 
-        // Menu Tools (optionnel)
+
+        // --- MENU TOOLS ---
         Menu menuTools = new Menu("Tools");
         MenuItem miRect = new MenuItem("Rectangle");
         MenuItem miEllipse = new MenuItem("Ellipse");
         MenuItem miImage = new MenuItem("Image");
+        MenuItem miSelect = new MenuItem("Select");
 
-        miRect.setOnAction(e -> {
-            currentTool = new ToolRect();
-            statusLabel.setText(currentTool.getName(this));
+        miRect.setOnAction(e -> setTool(new ToolRect()));
+        miEllipse.setOnAction(e -> setTool(new ToolEllipse()));
+        miImage.setOnAction(e -> setTool(new ToolImage()));
+        miSelect.setOnAction(e -> setTool(new ToolSelection()));
+        menuTools.getItems().addAll(miRect, miEllipse, miImage, miSelect);
+
+        // --- MENU EDIT ---
+        Menu menuEdit = new Menu("Edit");
+        MenuItem miCopy = new MenuItem("Copy");
+        miPaste = new MenuItem("Paste");
+        MenuItem miDelete = new MenuItem("Delete");
+
+        miCopy.setOnAction(e -> Clipboard.getInstance().copyToClipboard(selection.getContents()));
+        miPaste.setOnAction(e -> {
+            List<Clip> copied = Clipboard.getInstance().copyFromClipboard();
+            for (Clip c : copied) board.addClip(c);
+            draw();
         });
-        miEllipse.setOnAction(e -> {
-            currentTool = new ToolEllipse();
-            statusLabel.setText(currentTool.getName(this));
-        });
-        miImage.setOnAction(e -> {
-            currentTool = new ToolImage();
-            statusLabel.setText(currentTool.getName(this));
+        miDelete.setOnAction(e -> {
+            List<Clip> selected = selection.getContents();
+            for (Clip c : selected) board.removeClip(c);
+            selection.clear();
+            draw();
         });
 
-        menuTools.getItems().addAll(miRect, miEllipse, miImage);
+        menuEdit.getItems().addAll(miCopy, miPaste, miDelete);
 
-        MenuBar menuBar = new MenuBar(menuFile, menuTools);
+        MenuBar menuBar = new MenuBar(menuFile, menuTools, menuEdit);
         root.getChildren().add(menuBar);
 
-        // Toolbar
+        // --- TOOLBAR ---
         ToolBar toolbar = new ToolBar();
         Button btnRect = new Button("Rect");
         Button btnEllipse = new Button("Ellipse");
         Button btnImg = new Button("Img...");
+        Button btnSelect = new Button("Select");
 
-        btnRect.setOnAction(e -> {
-            currentTool = new ToolRect();
-            statusLabel.setText(currentTool.getName(this));
-        });
-        btnEllipse.setOnAction(e -> {
-            currentTool = new ToolEllipse();
-            statusLabel.setText(currentTool.getName(this));
-        });
-        btnImg.setOnAction(e -> {
-            currentTool = new ToolImage();
-            statusLabel.setText(currentTool.getName(this));
-        });
-
-        toolbar.getItems().addAll(btnRect, btnEllipse, btnImg);
+        btnRect.setOnAction(e -> setTool(new ToolRect()));
+        btnEllipse.setOnAction(e -> setTool(new ToolEllipse()));
+        btnImg.setOnAction(e -> setTool(new ToolImage()));
+        btnSelect.setOnAction(e -> setTool(new ToolSelection()));
+        toolbar.getItems().addAll(btnRect, btnEllipse, btnImg, btnSelect);
         root.getChildren().add(toolbar);
 
-        // Canvas
+        // --- PALETTE DE COULEURS ---
+        ToolBar colorBar = new ToolBar();
+        Color[] colors = { Color.BLACK, Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW };
+        for (Color c : colors) {
+            Button btn = new Button();
+            btn.setStyle("-fx-background-color: " + toRgbString(c) + "; -fx-min-width: 25; -fx-min-height: 25;");
+            btn.setOnAction(e -> currentColor = c);
+            colorBar.getItems().add(btn);
+        }
+        root.getChildren().add(colorBar);
+
+        // --- CANVAS ---
         canvas = new Canvas(800, 600);
-        @SuppressWarnings("unused")
-		GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        canvas.setOnMousePressed(e -> {
-            currentTool.press(this, e);
-            draw();
-        });
-
-        canvas.setOnMouseDragged(e -> {
-            currentTool.drag(this, e);
-            draw();
-        });
-
-        canvas.setOnMouseReleased(e -> {
-            currentTool.release(this, e);
-            draw();
-        });
-
+        canvas.setOnMousePressed(e -> { currentTool.press(this, e); draw(); });
+        canvas.setOnMouseDragged(e -> { currentTool.drag(this, e); draw(); });
+        canvas.setOnMouseReleased(e -> { currentTool.release(this, e); draw(); });
         root.getChildren().add(canvas);
-        
-        // Barre de statut
-        Separator sep = new Separator();
-        root.getChildren().addAll(sep, statusLabel);
 
-        // Configuration de la scène
+        // Status bar
+        statusLabel = new Label(currentTool.getName(this));
+        root.getChildren().add(new Separator());
+        root.getChildren().add(statusLabel);
+
+        // Enregistrement comme observateur du Clipboard
+        Clipboard.getInstance().addListener(this);
+        clipboardChanged(); // état initial du bouton Paste
+
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("PinBoard Editor");
         stage.show();
 
-        // Premier dessin
         draw();
     }
 
+    private void setTool(Tool tool) {
+        this.currentTool = tool;
+        statusLabel.setText(tool.getName(this));
+    }
+
+    /** Dessin principal */
     private void draw() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        // Effacer le canvas
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
-        // Dessiner les clips de la planche
         board.draw(gc);
-
-        // Dessiner le feedback de l'outil courant
-        if (currentTool != null) {
-            currentTool.drawFeedback(this, gc);
-        }
+        if (currentTool != null) currentTool.drawFeedback(this, gc);
+        selection.draw(gc);
     }
 
-    // Implémentation EditorInterface
-    @SuppressWarnings("exports")
-	@Override
-    public Board getBoard() {
-        return board;
-    }
-
+    /** Observateur Clipboard */
     @Override
-    public Selection getSelection() {
-        return null; // pour l'instant vide
+    public void clipboardChanged() {
+        miPaste.setDisable(Clipboard.getInstance().isEmpty());
     }
 
-    @Override
-    public CommandStack getUndoStack() {
-        return null; // pour l'instant vide
+    /** Conversion couleur */
+    private String toRgbString(Color c) {
+        return "rgb(" + (int)(c.getRed()*255) + "," + (int)(c.getGreen()*255) + "," + (int)(c.getBlue()*255) + ")";
     }
+
+    // --- EditorInterface ---
+    @Override
+    public Board getBoard() { return board; }
+    @Override
+    public Selection getSelection() { return selection; }
+    @Override
+    public CommandStack getUndoStack() { return null; }
+
+    // --- Couleur courante pour outils ---
+    public Color getCurrentColor() { return currentColor; }
 }
