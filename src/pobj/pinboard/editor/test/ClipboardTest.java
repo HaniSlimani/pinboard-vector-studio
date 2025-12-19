@@ -12,19 +12,20 @@ import javafx.scene.paint.Color;
 import pobj.pinboard.document.Clip;
 import pobj.pinboard.document.ClipEllipse;
 import pobj.pinboard.document.ClipRect;
+import pobj.pinboard.document.MyColor;
 import pobj.pinboard.editor.Clipboard;
 
 public class ClipboardTest {
 
 	private Clip[] clip = {
-			new ClipRect(100.,100, 200., 200., Color.RED)
+			new ClipRect(100.,100, 200., 200., new MyColor(Color.RED))
 	};
 	
 	private Clip[] clips = {
-			new ClipRect(100.,100, 200., 200., Color.RED), 
-			new ClipEllipse(200.,100, 300., 200., Color.BLUE)
+			new ClipRect(100.,100, 200., 200., new MyColor(Color.RED)), 
+			new ClipEllipse(200.,100, 300., 200., new MyColor(Color.BLUE))
 	};
-	
+
 	@BeforeEach
 	public void beforeTest() {
 		Clipboard.getInstance().clear();

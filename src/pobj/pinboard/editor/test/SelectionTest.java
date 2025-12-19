@@ -5,19 +5,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javafx.scene.paint.Color;
 import pobj.pinboard.document.Board;
 import pobj.pinboard.document.Clip;
 import pobj.pinboard.document.ClipEllipse;
 import pobj.pinboard.document.ClipRect;
+import pobj.pinboard.document.MyColor;
 import pobj.pinboard.editor.Selection;
 
 public class SelectionTest {
 	
 	private Selection s = new Selection();
-	private Clip rect = new ClipRect(100.,100, 200., 200., Color.RED);
-	private Clip ellipse = new ClipEllipse(200.,100, 300., 200., Color.BLUE);
+	private Clip rect = new ClipRect(100., 100., 200., 200., new MyColor(javafx.scene.paint.Color.RED));
+	private Clip ellipse = new ClipEllipse(200., 100., 300., 200., new MyColor(javafx.scene.paint.Color.BLUE));
 	private Board b = new Board();
+
 	
 	@BeforeEach
 	public void beforeTest() {

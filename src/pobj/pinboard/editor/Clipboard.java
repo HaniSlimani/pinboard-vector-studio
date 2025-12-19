@@ -16,7 +16,7 @@ public class Clipboard {
         return instance;
     }
 
-    public void copyToClipboard(List<Clip> clips) {
+    public void copyToClipboard(@SuppressWarnings("exports") List<Clip> clips) {
         contents.clear();
         for (Clip c : clips) {
             contents.add(c.copy());
@@ -24,7 +24,8 @@ public class Clipboard {
         notifyListeners();
     }
 
-    public List<Clip> copyFromClipboard() {
+    @SuppressWarnings("exports")
+	public List<Clip> copyFromClipboard() {
         List<Clip> result = new ArrayList<>();
         for (Clip c : contents) {
             result.add(c.copy());

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import javafx.scene.paint.Color;
 import pobj.pinboard.document.ClipRect;
+import pobj.pinboard.document.MyColor;
 import pobj.pinboard.editor.EditorInterface;
 import pobj.pinboard.editor.commands.CommandAdd;
 import pobj.pinboard.editor.commands.CommandMove;
@@ -14,8 +15,8 @@ import pobj.pinboard.editor.commands.test.CommandTest;
 public class CommandStackTest extends CommandTest {
 
 	private EditorInterface editor = new MockEditor();
-	private ClipRect rect1 = new ClipRect(100., 200., 110., 220., Color.RED);
-	private ClipRect rect2 = new ClipRect(120., 250., 130., 260., Color.RED);
+	private ClipRect rect1 = new ClipRect(100., 200., 110., 220., new MyColor(Color.RED));
+	private ClipRect rect2 = new ClipRect(120., 250., 130., 260., new MyColor(Color.RED));
 
 	@Test
 	public void test() {
@@ -24,8 +25,7 @@ public class CommandStackTest extends CommandTest {
 		
 		// add
 		CommandAdd cmd1 = new CommandAdd(editor, rect1);
-		cmd1.execute();
-		editor.getUndoStack().addCommand(cmd1);
+		editor.getUndoStack().addCommand(cmd1); // ← execute inclus ici
 		assertEquals(1, editor.getBoard().getContents().size());
 		assertTrue(editor.getBoard().getContents().contains(rect1));
 		assertFalse(editor.getUndoStack().isUndoEmpty());
@@ -33,7 +33,6 @@ public class CommandStackTest extends CommandTest {
 		
 		// add
 		CommandAdd cmd2 = new CommandAdd(editor, rect2);
-		cmd2.execute();
 		editor.getUndoStack().addCommand(cmd2);
 		assertEquals(2, editor.getBoard().getContents().size());
 		assertTrue(editor.getBoard().getContents().contains(rect1));
@@ -43,7 +42,6 @@ public class CommandStackTest extends CommandTest {
 	
 		// move
 		CommandMove cmd3 = new CommandMove(editor, rect1, 1000., 2000.);
-		cmd3.execute();
 		editor.getUndoStack().addCommand(cmd3);
 		assertEquals(2, editor.getBoard().getContents().size());
 		assertTrue(editor.getBoard().getContents().contains(rect1));
@@ -87,5 +85,4 @@ public class CommandStackTest extends CommandTest {
 		assertFalse(editor.getUndoStack().isUndoEmpty());
 		assertTrue(editor.getUndoStack().isRedoEmpty());
 	}
-	
 }

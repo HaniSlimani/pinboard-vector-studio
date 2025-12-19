@@ -4,7 +4,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import pobj.pinboard.document.Clip;
 import pobj.pinboard.document.ClipRect;
+import pobj.pinboard.document.MyColor;
 import pobj.pinboard.editor.EditorInterface;
+import pobj.pinboard.editor.commands.CommandAdd;
 
 public class ToolRect implements Tool {
 
@@ -31,9 +33,9 @@ public class ToolRect implements Tool {
         Clip c = new ClipRect(
             Math.min(startX, endX), Math.min(startY, endY),
             Math.max(startX, endX), Math.max(startY, endY),
-            i.getCurrentColor()  // <-- utilise l'interface, pas de cast
+            new MyColor(i.getCurrentColor())
         );
-        i.getBoard().addClip(c);
+        new CommandAdd(i, c).execute(); // <-- ici on utilise la commande
     }
 
     @Override
@@ -48,4 +50,3 @@ public class ToolRect implements Tool {
         return "Rectangle Tool";
     }
 }
-

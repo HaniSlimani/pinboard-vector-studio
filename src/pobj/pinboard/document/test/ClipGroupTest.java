@@ -10,11 +10,13 @@ import javafx.scene.paint.Color;
 import pobj.pinboard.document.Clip;
 import pobj.pinboard.document.ClipGroup;
 import pobj.pinboard.document.ClipRect;
+import pobj.pinboard.document.MyColor;
 
 public class ClipGroupTest {
 
-	private ClipRect rect1 = new ClipRect(100., 200., 110., 220., Color.RED);
-	private ClipRect rect2 = new ClipRect(120., 250., 130., 260., Color.RED);
+	private ClipRect rect1 = new ClipRect(100., 200., 110., 220., new MyColor(Color.RED));
+	private ClipRect rect2 = new ClipRect(120., 250., 130., 260., new MyColor(Color.RED));
+
 	private ClipGroup group = new ClipGroup();
 
 	@Test

@@ -6,20 +6,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import pobj.pinboard.document.Clip;
 import pobj.pinboard.document.ClipEllipse;
 import pobj.pinboard.document.ClipRect;
+import pobj.pinboard.document.MyColor;  // <-- import ajouté
 import pobj.pinboard.editor.EditorInterface;
 import pobj.pinboard.editor.tools.Tool;
 import pobj.pinboard.editor.tools.ToolSelection;
 
 public class ToolSelectionTest extends ToolTest {
 
-	private EditorInterface editor = new MockEditor();
-	private Clip rect = new ClipRect(100.,100, 200., 200., Color.RED);
-	private Clip ellipse = new ClipEllipse(200.,100, 300., 200., Color.BLUE);
-	private Tool tool = new ToolSelection();
+    private EditorInterface editor = new MockEditor();
+    private Clip rect = new ClipRect(100., 100., 200., 200., new MyColor(javafx.scene.paint.Color.RED));      // <-- MyColor
+    private Clip ellipse = new ClipEllipse(200., 100., 300., 200., new MyColor(javafx.scene.paint.Color.BLUE)); // <-- MyColor
+    private Tool tool = new ToolSelection();
 	
 	@BeforeEach
 	public void beforeTest() {

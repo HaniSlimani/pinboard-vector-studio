@@ -6,13 +6,14 @@ import org.junit.jupiter.api.Test;
 
 import javafx.scene.paint.Color;
 import pobj.pinboard.document.ClipRect;
+import pobj.pinboard.document.MyColor;
 import pobj.pinboard.editor.EditorInterface;
 import pobj.pinboard.editor.commands.CommandMove;;
 
 public class CommandMoveTest extends CommandTest {
 
 	private EditorInterface editor = new MockEditor();
-	private ClipRect rect = new ClipRect(100., 200., 110., 220., Color.RED);
+	private ClipRect rect = new ClipRect(100., 200., 110., 220., new MyColor(Color.RED));
 
 	@Test
 	public void testExecute() {

@@ -1,12 +1,12 @@
 package pobj.pinboard.editor.tools;
 
 import java.io.File;
-
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import pobj.pinboard.document.ClipImage;
 import pobj.pinboard.editor.EditorInterface;
+import pobj.pinboard.editor.commands.CommandAdd;
 
 public class ToolImage implements Tool {
 
@@ -39,16 +39,14 @@ public class ToolImage implements Tool {
     @Override
     public void release(EditorInterface i, MouseEvent e) {
         if (clip != null) {
-            i.getBoard().addClip(clip);
+            new CommandAdd(i, clip).execute(); // <-- utilisation de la commande
             clip = null;
         }
     }
 
     @Override
     public void drawFeedback(EditorInterface i, GraphicsContext gc) {
-        if (clip != null) {
-            clip.draw(gc);
-        }
+        if (clip != null) clip.draw(gc);
     }
 
     @Override
@@ -56,4 +54,3 @@ public class ToolImage implements Tool {
         return "Image";
     }
 }
-

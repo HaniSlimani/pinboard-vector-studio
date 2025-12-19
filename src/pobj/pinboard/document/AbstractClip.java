@@ -1,16 +1,14 @@
 package pobj.pinboard.document;
 
-import javafx.scene.paint.Color;
+import java.io.Serializable;
 
-public abstract class AbstractClip implements Clip {
+public abstract class AbstractClip implements Clip, Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private double left;
-    private double top;
-    private double right;
-    private double bottom;
-    private Color color;
+    private double left, top, right, bottom;
+    private MyColor color; // notre classe sérialisable
 
-    public AbstractClip(double left, double top, double right, double bottom, Color color) {
+    public AbstractClip(double left, double top, double right, double bottom, MyColor color) {
         this.left = left;
         this.top = top;
         this.right = right;
@@ -18,55 +16,20 @@ public abstract class AbstractClip implements Clip {
         this.color = color;
     }
 
-    @Override
-    public double getTop() {
-        return top;
-    }
+    public double getLeft() { return left; }
+    public double getTop() { return top; }
+    public double getRight() { return right; }
+    public double getBottom() { return bottom; }
 
-    @Override
-    public double getLeft() {
-        return left;
-    }
-
-    @Override
-    public double getBottom() {
-        return bottom;
-    }
-
-    @Override
-    public double getRight() {
-        return right;
-    }
-
-    @Override
     public void setGeometry(double left, double top, double right, double bottom) {
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
+        this.left = left; this.top = top; this.right = right; this.bottom = bottom;
     }
 
-    @Override
-    public void move(double x, double y) {
-        left += x;
-        right += x;
-        top += y;
-        bottom += y;
+    public void move(double dx, double dy) {
+        left += dx; right += dx; top += dy; bottom += dy;
     }
 
-    @Override
-    public void setColor(Color c) {
-        this.color = c;
-    }
-
-    @Override
-    public Color getColor() {
-        return color;
-    }
-
-    /** Version rectangle par défaut */
-    @Override
-    public boolean isSelected(double x, double y) {
-        return x >= left && x <= right && y >= top && y <= bottom;
-    }
+    public MyColor getMyColor() { return color; }
+    public void setMyColor(MyColor color) { this.color = color; }
 }
+

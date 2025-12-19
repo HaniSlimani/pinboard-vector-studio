@@ -6,14 +6,15 @@ import org.junit.jupiter.api.Test;
 
 import javafx.scene.paint.Color;
 import pobj.pinboard.document.ClipRect;
+import pobj.pinboard.document.MyColor;
 import pobj.pinboard.editor.EditorInterface;
 import pobj.pinboard.editor.commands.CommandAdd;
 
 public class CommandAddTest extends CommandTest {
 
 	private EditorInterface editor = new MockEditor();
-	private ClipRect rect1 = new ClipRect(100., 200., 110., 220., Color.RED);
-	private ClipRect rect2 = new ClipRect(120., 250., 130., 260., Color.RED);
+	private ClipRect rect1 = new ClipRect(100., 200., 110., 220., new MyColor(Color.RED));
+	private ClipRect rect2 = new ClipRect(120., 250., 130., 260., new MyColor(Color.RED));
 
 	@Test
 	public void testExecute() {

@@ -10,15 +10,17 @@ import javafx.scene.paint.Color;
 import pobj.pinboard.document.Board;
 import pobj.pinboard.document.Clip;
 import pobj.pinboard.document.ClipRect;
+import pobj.pinboard.document.MyColor;
 
 
 public class BoardTest {
 
 	@Test
 	public void test() {
-		Clip c1 = new ClipRect(100., 200. ,300., 400., Color.RED);
-		Clip c2 = new ClipRect(101., 201. ,301., 401., Color.BLUE);
-		Clip c3 = new ClipRect(102., 202. ,302., 402., Color.GREEN);
+		Clip c1 = new ClipRect(100., 200., 300., 400., new MyColor(Color.RED));
+		Clip c2 = new ClipRect(101., 201., 301., 401., new MyColor(Color.BLUE));
+		Clip c3 = new ClipRect(102., 202., 302., 402., new MyColor(Color.GREEN));
+
 		Board b = new Board();
 		assertTrue(b.getContents().isEmpty());
 		b.addClip(c1);

@@ -5,6 +5,7 @@ import javafx.scene.input.MouseEvent;
 import pobj.pinboard.document.Clip;
 import pobj.pinboard.editor.EditorInterface;
 import pobj.pinboard.editor.Selection;
+import pobj.pinboard.editor.commands.CommandMove;
 
 public class ToolSelection implements Tool {
 
@@ -13,44 +14,28 @@ public class ToolSelection implements Tool {
     @Override
     public void press(EditorInterface i, MouseEvent e) {
         Selection s = i.getSelection();
-
-        // Cas sélection simple
-        if (!e.isShiftDown()) {
-            s.select(i.getBoard(), e.getX(), e.getY());
-        }
-        // Cas toggle (sélection multiple)
-        else {
-            s.toogleSelect(i.getBoard(), e.getX(), e.getY());
-        }
-
+        if (!e.isShiftDown()) s.select(i.getBoard(), e.getX(), e.getY());
+        else s.toogleSelect(i.getBoard(), e.getX(), e.getY());
         lastX = e.getX();
         lastY = e.getY();
     }
 
     @Override
     public void drag(EditorInterface i, MouseEvent e) {
-        Selection s = i.getSelection();
-
         double dx = e.getX() - lastX;
         double dy = e.getY() - lastY;
-
-        // Déplace tous les clips sélectionnés
-        for (Clip c : s.getContents()) {
-            c.move(dx, dy);
+        for (Clip c : i.getSelection().getContents()) {
+            new CommandMove(i, c, dx, dy).execute(); // <-- passe par CommandMove
         }
-
         lastX = e.getX();
         lastY = e.getY();
     }
 
     @Override
-    public void release(EditorInterface i, MouseEvent e) {
-        // rien à faire
-    }
+    public void release(EditorInterface i, MouseEvent e) { }
 
     @Override
     public void drawFeedback(EditorInterface i, GraphicsContext gc) {
-        // Le feedback est géré par Selection.draw()
         i.getSelection().draw(gc);
     }
 

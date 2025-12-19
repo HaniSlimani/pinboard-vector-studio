@@ -10,18 +10,20 @@ import java.util.Arrays;
 import javafx.scene.paint.Color;
 import pobj.pinboard.document.Clip;
 import pobj.pinboard.document.ClipRect;
+import pobj.pinboard.document.MyColor;
 import pobj.pinboard.editor.Clipboard;
 import pobj.pinboard.editor.ClipboardListener;
 
 public class ClipboardListenerTest {
 
 	private Clip[] clip = {
-			new ClipRect(100.,100, 200., 200., Color.RED)
+	        new ClipRect(100., 100, 200., 200., new MyColor(Color.RED))
 	};
-	
+
 	private Clip[] clip2 = {
-			new ClipRect(150.,100, 200., 200., Color.RED)
+	        new ClipRect(150., 100, 200., 200., new MyColor(Color.RED))
 	};
+
 	
 	private class EventCounter implements ClipboardListener {
 		public int count;

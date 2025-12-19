@@ -1,13 +1,14 @@
 package pobj.pinboard.document;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
-public class Board {
-
+public class Board implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private List<Clip> contents;
 
     public Board() {
@@ -35,7 +36,7 @@ public class Board {
     }
 
     public void draw(GraphicsContext gc) {
-        gc.setFill(Color.WHITE);
+        gc.setFill(javafx.scene.paint.Color.WHITE);
         gc.fillRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
 
         for (Clip c : contents) {
